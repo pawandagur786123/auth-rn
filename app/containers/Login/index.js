@@ -2,77 +2,60 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import {TextInput, TouchableHighlight, View, Text,StyleSheet } from 'react-native';
+// import {CommonActions,StackActions } from 'react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+// import {NavigationActions,StackActions } from 'react-navigation';
+import { useSelector } from 'react-redux';
 
-import {NavigationActions,StackActions } from 'react-navigation';
-import { connect } from 'react-redux';
 
 
-
-class LoginScreen extends Component {
-  static navigationOptions={
-		header:null
-    };
+function LoginScreen(props){
+    const [userName, setUsername] = useState('')
+    const [psswd, setPsswd] = useState('')
+    const selector = useSelector(state => state)
+    const navigation = useNavigation()
     
-  constructor(props) {
-    super(props);
-
-    this.state = {
-        userName: '',
-        psswd:'',
+    const onSignupPress = () =>{
+        var login_cred = selector.login
+        if(userName == login_cred.username && psswd == login_cred.password){
+            _navigateTo('Root')
+        }
+        else{
+            alert("Incorret Password!! Try Again")
+        }
     }
-  }
-
-  onSignupPress(){
-      console.log(this.props)
-      var login_cred = this.props.DETAIL.login
-      if(this.state.userName == login_cred.username && this.state.psswd == login_cred.password){
-        this._navigateTo('Root')
-      }
-      else{
-          alert("Incorret Password!! Try Again")
-      }
-  }
-
-  _navigateTo = (routeName: string) => {
-    const actionToDispatch = StackActions.reset({
-        index: 0,
-        key: null,
-        actions: [NavigationActions.navigate({ routeName })]
-    })
-    this.props.navigation.dispatch(actionToDispatch)
-  }
-
-
-    render(){
-        return (
-          <View style={styles.container}>
-            <View style={styles.textcont}>
-              <TextInput
-                  style={styles.textinput}
-                  autoFocus={false}
-                  placeholderTextColor={'black'}
-                  selectionColor={'#7070D8'}
-                  placeholder={'Enter your User Name'}
-                  keyboardType='text'
-                  maxLength={20}
-                  onChangeText={(userName) => this.setState({userName : userName})}
-                />
-                <TextInput 
-                    secureTextEntry={true} 
-                    placeholder="Password"
-                    placeholderTextColor={'black'}
-                    style={styles.textinput} 
-                    onChangeText={(psswd) => { this.setState({psswd : psswd})}}
-                />
-                <TouchableHighlight underlayColor='#fff' style ={styles.button} onPress={() =>this.onSignupPress()}>
-                    <Text style={styles.buttontext}>Login</Text>
-                </TouchableHighlight>
-            </View>
-          </View>
-        );
+    const _navigateTo = (routeName: string) => {
+        navigation.navigate(routeName)
     }
+
+    return (
+        <View style={styles.container}>
+        <View style={styles.textcont}>
+            <TextInput
+                style={styles.textinput}
+                autoFocus={false}
+                placeholderTextColor={'black'}
+                selectionColor={'#7070D8'}
+                placeholder={'Enter your User Name'}
+                keyboardType='text'
+                maxLength={20}
+                onChangeText={(userName) => setUsername(userName)}
+            />
+            <TextInput 
+                secureTextEntry={true} 
+                placeholder="Password"
+                placeholderTextColor={'black'}
+                style={styles.textinput} 
+                onChangeText={(psswd) => { setPsswd(psswd)}}
+            />
+            <TouchableHighlight underlayColor='#fff' style ={styles.button} onPress={() =>onSignupPress()}>
+                <Text style={styles.buttontext}>Login</Text>
+            </TouchableHighlight>
+        </View>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -117,11 +100,7 @@ const styles = StyleSheet.create({
     },
 })
 
-function mapStateToProps(state) {
-    return {
-        DETAIL: state,
-    }
-}
 
 
-export default connect(mapStateToProps)(LoginScreen);
+
+export default LoginScreen;
